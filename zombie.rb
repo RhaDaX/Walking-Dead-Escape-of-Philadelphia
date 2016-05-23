@@ -1,6 +1,6 @@
 class Zombie
   Z = "assets/ZombieSprite.png"
-  attr_reader :left, :right
+  attr_reader :left, :right, :y
   
   def initialize(side)
     @side = side
@@ -19,8 +19,15 @@ class Zombie
   
   def draw
     @image[@type].draw( @left, @y, ZOrder::Zombie, 1.6, 1.6) if @side == :right
-    @image[@type].draw( @right , @y, ZOrder::Zombie, -1.6, 1.6) if @side == :left
-    
+    @image[@type].draw( @right , @y, ZOrder::Zombie, -1.6, 1.6) if @side == :left  
+  end
+  
+  def position_x
+    if @side == :right
+      return @left
+    elsif @side == :left
+      return @right
+    end
   end
   
 end

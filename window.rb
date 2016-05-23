@@ -6,7 +6,7 @@ class Window < Gosu::Window
     @game_in_progress = false
     @player = Player.new
     @zombies = []
-    @bullet = []
+    #@bullet = []
     @title = Title.new
     title_screen
     @i = 0
@@ -38,15 +38,13 @@ class Window < Gosu::Window
     return unless @game_in_progress
     update_player
     update_zombie
-    update_bullet
+    update_bullet if @bullet != nil
   end
   
   def update_player
-    if Gosu::button_down?(Gosu::KbF)
-        if @bullet == nil
-          @player.fire 
-          @bullet = Bullet.new(@player)
-        end
+    if Gosu::button_down?(Gosu::KbF) && @bullet == nil        
+        @player.fire 
+        @bullet = Bullet.new(@player)
     end
     @player.go_left if Gosu::button_down?(Gosu::KbLeft)
     @player.go_right if Gosu::button_down?(Gosu::KbRight)
@@ -67,10 +65,16 @@ class Window < Gosu::Window
     @zombies.reject! {|zombie| zombie.left > WindowWidth || zombie.right < 0 }
   end
   
-  def update_bullet
-    unless @bullet.size > 1
+  def update_bullet  
+      @bullet.kill(@zombies)
+      if @bullet.has_killed 
+        @bullet = nil
+      end
+      if @bullet != nil
+        @bullet.update(@player) 
+        @bullet = nil if @bullet.x > WindowWidth|| @bullet.x < 0
+      end
       
-      @bullet.update(@player) if @bullet != nil
   end
   
   def draw
