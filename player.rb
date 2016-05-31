@@ -3,16 +3,18 @@ class Player
   Perso = "assets/Trevor-sprite.png"
   Fire = "assets/fire.wav"
   @pad = :right
-  @side = :right
   @action = nil
   AccelFactor = 0.3
   AccelFactorJump = 3
   SkidingFactor = 0.9
   SkidingFactorJump = 0
-  @jump = false
+  
   @has_fire = false
   
   def initialize
+    @side = :left
+    @jump = false
+    @bullet_side = @side
     @x = 300
     @y = 300
     @ground = 0
@@ -23,13 +25,13 @@ class Player
   end
   
   def fire
+    @pad = :fire
+    @bullet_side = @side
+    @img = @image[5]
     if @has_fire == false
       @fire_sound.play(1.0)
       already_fire
     end
-    @pad = :fire
-    @bullet_side = @side
-    @img = @image[5]
   end
   
   def already_fire
@@ -45,14 +47,20 @@ class Player
   def draw
     case @pad
     when :left
-      @image[0].draw( @x, @y, ZOrder::Player, -1.3, 1.3)
-    when :right
-      delta = @image[0].width / 2
-      @image[0].draw(@x - delta , @y, ZOrder::Player, 1.3, 1.3)
-    when :fire
-      if @side == :left
+      unless Gosu::button_down?(Gosu::KbF)
+        @image[0].draw( @x, @y, ZOrder::Player, -1.3, 1.3)
+      else
         @img.draw( @x - 18, @y, ZOrder::Player, -1.3, 1.3) 
       end
+    when :right
+      unless Gosu::button_down?(Gosu::KbF)
+        delta = @image[0].width / 2
+        @image[0].draw(@x - delta , @y, ZOrder::Player, 1.3, 1.3)
+      else
+        @img.draw( @x - 18, @y, ZOrder::Player, 1.3, 1.3) 
+      end
+    when :fire
+      @img.draw( @x - 18, @y, ZOrder::Player, -1.3, 1.3) if @side == :left
       @img.draw( @x - 36, @y, ZOrder::Player, 1.3, 1.3) if @side == :right
     else
       @image[0].draw( @x, @y, ZOrder::Player, -1.3, 1.3)
@@ -63,13 +71,13 @@ class Player
   def go_left
     @pad = :left
     @side = :left
-    @velocity -= AccelFactor if @x > 70 
+    @velocity -= AccelFactor if @x > 70 unless Gosu::button_down?(Gosu::KbF)
   end
   
   def go_right
     @pad = :right
     @side = :right
-    @velocity += AccelFactor if @x < 600
+    @velocity += AccelFactor if @x < 600 unless Gosu::button_down?(Gosu::KbF)
     
   end
 
@@ -77,8 +85,9 @@ class Player
     if @y >= 220 
     @velocity_jump += 1 + AccelFactorJump
     else
+      jump_down 
       @jump = true
-      jump_down
+      
     end
   end
   

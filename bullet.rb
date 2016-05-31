@@ -25,8 +25,11 @@ class Bullet
   private
   
   def collide?(zombie)
-    distance = Gosu::distance( @x , @y, zombie.position_x, zombie.y)
-    distance < DistanceOfCollision
+      distance = Gosu::distance( @x , @y, zombie.position_x, zombie.y) if zombie.side == :left
+      distance = Gosu::distance( @x , @y, zombie.position_x + 45, zombie.y) if zombie.side == :right
+      
+      distance < DistanceOfCollision
+
   end
   
   def collision

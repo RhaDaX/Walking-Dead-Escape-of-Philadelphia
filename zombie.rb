@@ -1,6 +1,6 @@
 class Zombie
   Z = "assets/ZombieSprite.png"
-  attr_reader :left, :right, :y
+  attr_reader :left, :right, :y, :side
   
   def initialize(side)
     @side = side

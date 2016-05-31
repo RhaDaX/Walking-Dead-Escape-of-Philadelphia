@@ -6,7 +6,7 @@ class Window < Gosu::Window
     @game_in_progress = false
     @player = Player.new
     @zombies = []
-    #@bullet = []
+    @bullet = nil
     @title = Title.new
     title_screen
     @i = 0
@@ -42,7 +42,7 @@ class Window < Gosu::Window
   end
   
   def update_player
-    if Gosu::button_down?(Gosu::KbF) && @bullet == nil        
+    if Gosu::button_down?(Gosu::KbF) #&& @bullet == nil        
         @player.fire 
         @bullet = Bullet.new(@player)
     end
@@ -56,10 +56,10 @@ class Window < Gosu::Window
 
   
   def update_zombie
-    unless @zombies.size > 4
+    unless @zombies.size > 6
       side = [:left, :right].sample
       r = rand
-      @zombies.push(Zombie.new(side)) if r < 0.035     
+      @zombies.push(Zombie.new(side)) if r < 0.32    
     end
     @zombies.each(&:update)
     @zombies.reject! {|zombie| zombie.left > WindowWidth || zombie.right < 0 }
@@ -72,7 +72,7 @@ class Window < Gosu::Window
       end
       if @bullet != nil
         @bullet.update(@player) 
-        @bullet = nil if @bullet.x > WindowWidth|| @bullet.x < 0
+        @bullet = nil if @bullet.x > WindowWidth || @bullet.x < 0
       end
       
   end
